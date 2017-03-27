@@ -25,7 +25,7 @@ var upload = multer({ storage: _storage });
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 15000);
+app.set('port', process.env.PORT || 14000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.engine('.html', require('ejs').__express);
