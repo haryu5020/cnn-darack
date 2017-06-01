@@ -9,14 +9,16 @@ var express = require('express')
   , http = require('http')
   , multer = require('multer')
   , bodyParser = require('body-parser')
-  , path = require('path');
+  , path = require('path')
+  , convnetjs = require('convnetjs')
+  , mongodb = require('mongodb').MongoClient;
 
 var _storage = multer.diskStorage({
 	  destination: function (req, file, cb) {
 	    cb(null, 'uploads/');
 	  },
 	  filename: function (req, file, cb) {
-	    cb(null, file.originalname);
+	    cb(null, 'save.png');
 	  }	
 });
 
@@ -24,8 +26,32 @@ var upload = multer({ storage: _storage });
 
 var app = express();
 
+/* DB Connect */
+var mongodbURL = "mongodb://localhost:27017/cnn-darack";
+var mongo;
+mongodb.connect(mongodbURL, function(err, db){
+	if(err){
+		console.log("DB 연결 실패");
+		return ;
+	}
+	mongo = db;
+	console.log("DB Connected");
+	
+	mongo.collection('images').find({}).toArray(function(err, doc){
+		if(err){
+			console.log("Document 불러오기 실패");
+			return;
+		}
+		console.log("check : " + doc.length);
+		for(var i = 0; i < doc.length; i++){
+			console.log("문서 : " + doc[i].path);
+		}
+	});
+
+});
+
 // all environments
-app.set('port', process.env.PORT || 14000);
+app.set('port', process.env.PORT || 15000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 app.engine('.html', require('ejs').__express);
